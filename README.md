@@ -1,1 +1,6 @@
-# nursing_callout
+# Nursing Callout Quickstart
+This repository contains two versions of project files:
+1. A version of the project written in Python
+2. A version of the project written (mostly) in SQL
+
+This project is intended to be run from within a Databricks Spark Context. Some code features (e.g., dbutils) are not supported via Spark Connect so unless you are running this from within a managed Databricks environment, your mileage may vary.
