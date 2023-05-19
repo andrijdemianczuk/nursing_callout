@@ -1,0 +1,10 @@
+Short,Description
+EMERG,provides immediate medical care for patients with urgent or life-threatening conditions.
+ICU,provides specialized care for critically ill patients who require close monitoring and support
+MEDSURG,provides care for patients who require medical or surgical intervention for a variety of conditions.
+PEDS,provides care for infants children and adolescents with a range of medical needs.
+OBGYN,provides care for women during pregnancy childbirth and postpartum as well as for women with gynecological conditions
+NICU,provides specialized care for newborns who require close monitoring and support.
+ONC,provides care for patients with cancer including chemotherapy radiation therapy and other specialized treatments.
+REHAB,provides care for patients who are recovering from injuries or illnesses and need help regaining their physical and cognitive abilities.
+PSYCH,provides care for patients with mental health disorders including both inpatient and outpatient services.
