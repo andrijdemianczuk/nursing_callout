@@ -9,5 +9,13 @@ This manual cover how to get started both with the Python and SQL versions of th
 
 If you need help getting this repo into your managed Databricks environment, please refer to [these docs](https://docs.databricks.com/repos/index.html):
 
+**A Unity Catalog enabled workspace is required**
+
 ## Python Quickstart
+Deploying the python-based workflows is a fairly straightforward process. You can deploy either or both the workflow and DLT pipeline. The former takes a more traditional ETL stance, leveraging data being committed to bespoke delta tables. The DLT pipeline however works in terms of materializations which are then conceptualized as delta artifacts that can be directly interfaced with.
+
+### Deploying the Python Workflow
+1. Clone this repository into your Databricks Workspace if not already done.
+2. 
+
 ## SQL Quickstart
