@@ -21,5 +21,5 @@ Deploying the python-based workflows is a fairly straightforward process. You ca
   USER: Set to your username
   CATALOG: Set to the catalog of your choice (main isn't a bad option if you don't know). This Catalog MUST exist and must be unity-enabled.
   ```
-3. Run the Init_Lookups notebook with the 'Run All' option 
+3. Run the Init_Lookups notebook with the 'Run All' option. This will create a schema in the catalog of your choice called 'hls' which will be used for the remainder of the project. Please remember, that choosing a Unity-enabled catalog is required.
 ## SQL Quickstart
