@@ -92,6 +92,7 @@ class NurseLookups():
     except Exception as err:
         print(err)
 
+#Create an instance of our NurseLookups() object and call upon the necessary functions to create our lookup delta files from the stored CSV files
 n = NurseLookups(user=USER)
 n.appendPath()
 n.compileLookups(lookups=lookups)
