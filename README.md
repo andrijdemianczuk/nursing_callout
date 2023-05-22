@@ -16,6 +16,8 @@ Deploying the python-based workflows is a fairly straightforward process. You ca
 
 ### Deploying the Python Workflow
 1. Clone this repository into your Databricks Workspace if not already done.
-2. 
+2. Open lookups/Init_Lookups and edit the two global variables in cell 1 to match your credentials and schema config:
+  a. USER: Set to your username
+  b. Catalog: Set to the catalog of your choice (main isn't a bad option if you don't know). This Catalog MUST exist and must be unity-enabled.
 
 ## SQL Quickstart
