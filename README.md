@@ -15,9 +15,11 @@ If you need help getting this repo into your managed Databricks environment, ple
 Deploying the python-based workflows is a fairly straightforward process. You can deploy either or both the workflow and DLT pipeline. The former takes a more traditional ETL stance, leveraging data being committed to bespoke delta tables. The DLT pipeline however works in terms of materializations which are then conceptualized as delta artifacts that can be directly interfaced with.
 
 ### Deploying the Python Workflow
-_1. Clone this repository into your Databricks Workspace if not already done.
-_2. Open lookups/Init_Lookups and edit the two global variables in cell 1 to match your credentials and schema config:
-  __1. USER: Set to your username
-  __2. Catalog: Set to the catalog of your choice (main isn't a bad option if you don't know). This Catalog MUST exist and must be unity-enabled.
-
+1. Clone this repository into your Databricks Workspace if not already done.
+2. Open lookups/Init_Lookups and edit the two global variables in cell 1 to match your credentials and schema config:
+  ```
+  USER: Set to your username
+  CATALOG: Set to the catalog of your choice (main isn't a bad option if you don't know). This Catalog MUST exist and must be unity-enabled.
+  ```
+3. Run the Init_Lookups notebook with the 'Run All' option 
 ## SQL Quickstart
