@@ -1,4 +1,15 @@
 # Databricks notebook source
+# MAGIC %pip install faker
+
+# COMMAND ----------
+
+# DBTITLE 1,Initialize global properties
+#Replace with the root catalog of your choice. This should be the same catalog where the hls schema was created with the init lookups notebook.
+USER = "andrij.demianczuk@databricks.com"
+CATALOG = "main"
+
+# COMMAND ----------
+
 # import the libraries necessary for this demonstration
 from faker import Factory
 import pandas as pd
@@ -10,16 +21,10 @@ fake = Faker()
 
 # COMMAND ----------
 
-# MAGIC %sql
-# MAGIC USE canada_west.ad;
-# MAGIC SHOW TABLES;
-
-# COMMAND ----------
-
 #load lookup tables
-df_facilities = spark.table("canada_west.ad.l_hls_facilities")
-df_medunits = spark.table("canada_west.ad.l_hls_medunits")
-df_positions = spark.table("canada_west.ad.l_hls_positions")
+df_facilities = spark.table(f"{CATALOG}.hls.l_nc_facilities")
+df_medunits = spark.table(f"{CATALOG}.hls.l_nc_med_units")
+df_positions = spark.table(f"{CATALOG}.hls.l_nc_nurse_positions")
 
 # COMMAND ----------
 
@@ -56,13 +61,19 @@ staffDF
 
 # COMMAND ----------
 
+#Uncomment the next line if you want to start fresh with a new set of staff
+#dbutils.fs.rm(f"dbfs:/Users/{USER}/data/hls_source/staff", True)
+
+# COMMAND ----------
+
 #Write the dataset to a csv file which we'll re-use for loading the Delta Live Tables
 now = dt.datetime.now().strftime("%Y-%m-%d_%H_%M_%s")
-staffDF.to_csv(f"/dbfs/Users/andrij.demianczuk@databricks.com/data/hls_source/staff/out_{now}.csv")
+dbutils.fs.mkdirs(f"dbfs:/Users/{USER}/data/hls_source/staff")
+staffDF.to_csv(f"/dbfs/Users/{USER}/data/hls_source/staff/out_{now}.csv")
 
 # COMMAND ----------
 
 #Write the staffing table to delta
 sDF = spark.createDataFrame(staffDF)
 sDF.coalesce(1)
-sDF.write.format('delta').option("mergeSchema", "true").partitionBy("Unit").mode('overwrite').saveAsTable("canada_west.ad.b_hls_staff")
+sDF.write.format('delta').option("mergeSchema", "true").partitionBy("Unit").mode('overwrite').saveAsTable(f"{CATALOG}.hls.b_hls_staff")

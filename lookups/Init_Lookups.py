@@ -1,6 +1,6 @@
 # Databricks notebook source
 # DBTITLE 1,Global Variables
-USER = "andrij.demianczuk@databricks.com"
+USER = "<user.name@databricks.com>"
 CATALOG = "main"
 
 #Definition of lookup titles. DO NOT CHANGE!
