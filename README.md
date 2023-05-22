@@ -22,4 +22,9 @@ Deploying the python-based workflows is a fairly straightforward process. You ca
   CATALOG: Set to the catalog of your choice (main isn't a bad option if you don't know). This Catalog MUST exist and must be unity-enabled.
   ```
 3. Run the Init_Lookups notebook with the 'Run All' option. This will create a schema in the catalog of your choice called 'hls' which will be used for the remainder of the project. Please remember, that choosing a Unity-enabled catalog is required.
+4. Open python/00_Generate_Static_files. This notebook bootstraps the staffing sheet and writes it to a storage location within DBFS. Replace the catalog and user names with the ones from the previous step. e.g., This notebook creates a random list of 1000 staff / employees.
+```
+USER = "<user.name>@databricks.com"
+CATALOG = "main"
+```
 ## SQL Quickstart
