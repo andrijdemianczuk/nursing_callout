@@ -27,4 +27,11 @@ Deploying the python-based workflows is a fairly straightforward process. You ca
 USER = "<user.name>@databricks.com"
 CATALOG = "main"
 ```
-## SQL Quickstart
+5. Run the notebook. This should create a new table called 'b_hls_staff'. This will be our bronze staffing table. The intention of this later is to be able to do upserts to this table to showcase CDF / CDC (coming soon)
+6. Open python/00_Generate_Callout. This notebook is used to generate a callout series and lands a file as csv in a landing area which will be picked up by autoloader. Like before, update the following at the top of the notebook:
+```
+USER = "<user.name>@databricks.com"
+CATALOG = "main"
+```
+7. Run the notebook. This notebook is intended to be run as many times as required to generate callouts.
+8. **Optional:** If you want to test out the Spark Streaming capabilites, run the python/00_Process_Callout notebook. This will initialize a new stream and display a streaming dataframe. If you want to see new data coming in, leave this stream running and run the pyton/00_Generate_Callout notebook again to see new callout records being appended in real-time.

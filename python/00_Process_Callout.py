@@ -1,8 +1,13 @@
 # Databricks notebook source
-#file_path = "/FileStore/Users/andrij.demianczuk@databricks.com/data/hls_source/callouts/"
-file_path = "/Users/andrij.demianczuk@databricks.com/data/hls_source/callouts/"
-write_path = "/Users/andrij.demianczuk@databricks.com/data/hls_delta/b_callout_stream"
-checkpoint_path = "/Users/andrij.demianczuk@databricks.com/data/hls_source/callouts_cp/"
+# DBTITLE 1,Initialize global parameters
+USER = "andrij.demianczuk@databricks.com"
+CATALOG = "main"
+
+# COMMAND ----------
+
+file_path = f"/Users/{USER}/data/hls_source/callouts/"
+write_path = f"/Users/{USER}/data/hls_delta/b_callout_stream"
+checkpoint_path = f"/Users/{USER}/data/hls_source/callouts_cp/"
 
 raw_df = (spark.readStream
     .format("cloudFiles")
@@ -15,17 +20,13 @@ raw_df = (spark.readStream
     .format("delta")
     .outputMode("append")
     .option("checkpointLocation", checkpoint_path)
-    .toTable("canada_west.ad.b_hls_callout")
+    .toTable(f"{CATALOG}.hls.b_hls_callout")
 )
 
 # COMMAND ----------
 
-df = spark.table("canada_west.ad.b_hls_callout")
+df = spark.table(f"{CATALOG}.hls.b_hls_callout")
 
 # COMMAND ----------
 
 display(df)
-
-# COMMAND ----------
-
-
