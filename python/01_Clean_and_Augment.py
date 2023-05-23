@@ -6,6 +6,11 @@
 
 # COMMAND ----------
 
+# DBTITLE 1,Initialize global parameters
+CATALOG = "main"
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC # Cleaning & Augmenting the Data
 # MAGIC
@@ -30,7 +35,7 @@ from pyspark.sql.types import DoubleType
 # COMMAND ----------
 
 # DBTITLE 1,Preview the initial bronze (raw) table
-display(spark.sql("SELECT * FROM canada_west.ad.b_hls_staff"))
+display(spark.sql(f"SELECT * FROM {CATALOG}.hls.b_hls_staff"))
 
 # COMMAND ----------
 
@@ -48,7 +53,7 @@ display(spark.sql("SELECT * FROM canada_west.ad.b_hls_staff"))
 
 # DBTITLE 1,Figure out the weights for all staff based on hours worked
 #Read the source table
-df = spark.table("canada_west.ad.b_hls_staff")
+df = spark.table(f"{CATALOG}.hls.b_hls_staff")
 
 #Identify the overall average of hours for all staff - this will be used for weighting
 averageYear = df.select(avg("HrsThisYear")).collect()[0][0] #returns the value of the first row & first column
@@ -64,28 +69,28 @@ averageWeek = float(averageWeek)
 df = df.withColumn("HrsThisYearWeight", col("HrsThisYear")/averageYear).withColumn("AvgWeeklyWeight", col("AvgWeeklyHrs")/averageWeek)
 
 #Write the dataframe to a new table with the paritions set
-df.write.format('delta').option("mergeSchema", "true").partitionBy("Unit", "Shift").mode('overwrite').saveAsTable("canada_west.ad.s_hls_staff_augmented")
+df.write.format('delta').option("mergeSchema", "true").partitionBy("Unit", "Shift").mode('overwrite').saveAsTable(f"{CATALOG}.hls.s_hls_staff_augmented")
 
 # COMMAND ----------
 
 # DBTITLE 1,Join the medical unit & facilities data for the callouts table
 #Create our three datafames that we will be joining for our augmented callouts table
-calloutDF = spark.table("canada_west.ad.b_hls_callout").drop("_rescued_data")
-facilitiesDF = (spark.table("canada_west.ad.l_hls_facilities")
+calloutDF = spark.table(f"{CATALOG}.hls.b_hls_callout").drop("_rescued_data")
+facilitiesDF = (spark.table(f"{CATALOG}.hls.l_nc_facilities")
     .withColumnRenamed("Short", "fShort")
     .withColumnRenamed("Long", "fLong")
     .withColumnRenamed("Description", "fDescription"))
-medunitsDF = (spark.table("canada_west.ad.l_hls_medunits")
+medunitsDF = (spark.table(f"{CATALOG}.hls.l_nc_med_units")
     .withColumnRenamed("Short", "mShort")
     .withColumnRenamed("Description", "mDescription"))
 
 #Join the dataframes and write to a new delta table
 calloutDF = calloutDF.join(facilitiesDF, calloutDF.Facility == facilitiesDF.fShort).join(medunitsDF, calloutDF.Unit == medunitsDF.mShort)
-calloutDF.write.format('delta').option("mergeSchema", "true").partitionBy("Facility").mode('overwrite').saveAsTable("canada_west.ad.s_hls_callout_augmented")
+calloutDF.write.format('delta').option("mergeSchema", "true").partitionBy("Facility").mode('overwrite').saveAsTable(f"{CATALOG}.hls.s_hls_callout_augmented")
 
 # COMMAND ----------
 
 # DBTITLE 1,Create a filter silver table with only unfilled callouts
 #Load and save only the unfilled callouts as a new delta table
-unfilledCalloutsDF = spark.table("canada_west.ad.s_hls_callout_augmented").filter(col("Filled") == "False")
-unfilledCalloutsDF.write.format('delta').option("mergeSchema", "true").partitionBy("Facility").mode('overwrite').saveAsTable("canada_west.ad.s_hls_unfilled_callouts")
+unfilledCalloutsDF = spark.table(f"{CATALOG}.hls.s_hls_callout_augmented").filter(col("Filled") == "False")
+unfilledCalloutsDF.write.format('delta').option("mergeSchema", "true").partitionBy("Facility").mode('overwrite').saveAsTable(f"{CATALOG}.hls.s_hls_unfilled_callouts")

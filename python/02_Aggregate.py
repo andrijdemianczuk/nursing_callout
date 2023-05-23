@@ -6,6 +6,11 @@
 
 # COMMAND ----------
 
+# DBTITLE 1,Initialize global parameters
+CATALOG = "main"
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Apache_Spark_logo.svg/1200px-Apache_Spark_logo.svg.png" width=250 />
 # MAGIC
@@ -29,7 +34,7 @@ from pyspark.sql.types import *
 
 # DBTITLE 1,Enrich the unfilled callouts with day-of-week
 #Create the initial dataframe
-df = spark.table("canada_west.ad.s_hls_unfilled_callouts")
+df = spark.table(f"{CATALOG}.hls.s_hls_unfilled_callouts")
 
 #Perform transformations (extract DOW)
 df = (df
@@ -41,7 +46,7 @@ df = (df
     .option("overwriteSchema", "true")
     .partitionBy("Facility")
     .mode('overwrite')
-    .saveAsTable("canada_west.ad.g_hls_unfilled_summary"))
+    .saveAsTable(f"{CATALOG}.hls.g_hls_unfilled_summary"))
 
 # COMMAND ----------
 
@@ -54,7 +59,7 @@ df = (df
 
 # DBTITLE 1,Aggregate staffing availability into a single table
 #Create the initial dataframe
-df = spark.table("canada_west.ad.s_hls_staff_augmented")
+df = spark.table(f"{CATALOG}.hls.s_hls_staff_augmented")
 
 #Count by Credentials, Shifts and Unit
 df = (df.select("Credentials", "Shift", "Unit")
@@ -64,7 +69,7 @@ df = (df.select("Credentials", "Shift", "Unit")
 (df.write.format('delta')
     .option("overwriteSchema", "true")
     .mode('overwrite')
-    .saveAsTable("canada_west.ad.g_hls_staff_availability"))
+    .saveAsTable(f"{CATALOG}.hls.g_hls_staff_availability"))
 
 # COMMAND ----------
 
@@ -76,7 +81,7 @@ df = (df.select("Credentials", "Shift", "Unit")
 
 # DBTITLE 1,Isolate the staff required each day
 #Create the initial dataframe
-df = spark.table("canada_west.ad.s_hls_callout_augmented")
+df = spark.table(f"{CATALOG}.hls.s_hls_callout_augmented")
 
 #Handle our data types
 df = (df.withColumn("Date", df.Date.cast(TimestampType()))
@@ -90,7 +95,7 @@ df = (df.groupBy("Date", "Shift", "Unit", "Facility")
 (df.write.format('delta')
     .option("overwriteSchema", "true")
     .mode('overwrite')
-    .saveAsTable("canada_west.ad.g_hls_staff_absences"))
+    .saveAsTable(f"{CATALOG}.hls.g_hls_staff_absences"))
 
 # COMMAND ----------
 
@@ -105,7 +110,7 @@ df = (df.groupBy("Date", "Shift", "Unit", "Facility")
 
 # DBTITLE 1,Create a table with only the heavy workers
 #Create the initial dataframe
-df = spark.table("canada_west.ad.s_hls_staff_augmented")
+df = spark.table(f"{CATALOG}.hls.s_hls_staff_augmented")
 
 #Select only workers above the average
 df = (df.where((fn.col("HrsThisYearWeight") > 1)))
@@ -114,13 +119,13 @@ df = (df.where((fn.col("HrsThisYearWeight") > 1)))
 (df.write.format('delta')
     .option("overwriteSchema", "true")
     .mode('overwrite')
-    .saveAsTable("canada_west.ad.g_hls_heavy_workers"))
+    .saveAsTable(f"{CATALOG}.hls.g_hls_heavy_workers"))
 
 # COMMAND ----------
 
 # DBTITLE 1,Create a table with only the light workers
 #Create the initial dataframe
-df = spark.table("canada_west.ad.s_hls_staff_augmented")
+df = spark.table(f"{CATALOG}.hls.s_hls_staff_augmented")
 
 #Select only workers above the average
 df = (df.where((fn.col("HrsThisYearWeight") < 1)))
@@ -129,4 +134,4 @@ df = (df.where((fn.col("HrsThisYearWeight") < 1)))
 (df.write.format('delta')
     .option("overwriteSchema", "true")
     .mode('overwrite')
-    .saveAsTable("canada_west.ad.g_hls_light_workers"))
+    .saveAsTable(f"{CATALOG}.hls.g_hls_light_workers"))
