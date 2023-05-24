@@ -1,0 +1,31 @@
+{
+    "id": "61855cda-baa4-43b9-b628-7e0d53308fb7",
+    "clusters": [
+        {
+            "label": "default",
+            "autoscale": {
+                "min_workers": 1,
+                "max_workers": 1,
+                "mode": "ENHANCED"
+            }
+        }
+    ],
+    "development": true,
+    "continuous": false,
+    "channel": "PREVIEW",
+    "photon": false,
+    "libraries": [
+        {
+            "notebook": {
+                "path": "/Repos/<user.name@databricks.com>/nursing_callout/python/10_DLT_Staffing_Pipeline"
+            }
+        }
+    ],
+    "name": "nurse_callout_pipeline",
+    "edition": "ADVANCED",
+    "catalog": "main",
+    "configuration": {
+        "yearly_hours": "400"
+    },
+    "target": "hls"
+}
