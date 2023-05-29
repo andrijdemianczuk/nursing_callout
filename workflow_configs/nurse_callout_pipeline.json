@@ -17,7 +17,7 @@
     "libraries": [
         {
             "notebook": {
-                "path": "/Repos/<user.name@databricks.com>/nursing_callout/python/10_DLT_Staffing_Pipeline"
+                "path": "/Repos/{user.name@databricks.com}/nursing_callout/python/10_DLT_Staffing_Pipeline"
             }
         }
     ],
@@ -25,7 +25,10 @@
     "edition": "ADVANCED",
     "catalog": "main",
     "configuration": {
-        "yearly_hours": "400"
+        "yearly_hours": "400",
+        "user": "{user.name@databricks.com}",
+        "catalog": "main",
+        "schema": "hls"
     },
     "target": "hls"
 }

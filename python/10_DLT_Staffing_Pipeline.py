@@ -9,6 +9,12 @@
 
 # COMMAND ----------
 
+USER = spark.conf.get("user")
+CATALOG = spark.conf.get("catalog")
+SCHEMA = spark.conf.get("schema")
+
+# COMMAND ----------
+
 # DBTITLE 1,Initialize the supporting libraries
 # Supporting PySpark libs
 from pyspark.sql.functions import *
@@ -18,7 +24,10 @@ from pyspark.sql.window import *
 # Required for DLT decorators
 import dlt
 
+import sys
+import os
 import datetime
+import urllib
 
 # COMMAND ----------
 
@@ -43,6 +52,15 @@ import datetime
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ## A note on how we're using lookup tables
+# MAGIC One of the restrictions around DLT is we can't source data in the same way we did for static ETL. There are a few constraints we need to be aware of here:
+# MAGIC 1. We are not allowed to run a url get request for security reasons.
+# MAGIC 2. We are not allowed access to the driver's file system so copying from the repo in this circumstance isn't allowed.
+# MAGIC 3. The best way to read any static files is either via dbfs direct, or create a new dataframe from an existing table. This is the approach we'll be taking here. Alternatively if our lookup tables are larger than a couple of thousand rows, we may want to reduce the dimensionality of the data to make it easier on the dlt pipeline to do it's thing.
+
+# COMMAND ----------
+
 # DBTITLE 1,Lookup Table: Facilities
 @dlt.table(
     comment="The lookup files containing facility information",
@@ -50,14 +68,9 @@ import datetime
     temporary=False,
 )
 def dlt_hls_facilities():
-
+    
     # Read the lookup table from source and drop the index column
-    df = (spark.read.option("header", True)
-        .option("inferSchema", True)
-        .csv("/Users/andrij.demianczuk@databricks.com/data/lookups/l_hls_facilities.csv"))
-
-    #drop the index column
-    df = df.drop(df._c0)
+    df = spark.table(f"{CATALOG}.{SCHEMA}.l_nc_facilities")
 
     # return the result as a materialization from the dataframe object
     return df
@@ -74,12 +87,7 @@ def dlt_hls_facilities():
 def dlt_hls_positions():
 
     # Read the lookup table from source and drop the index column
-    df = (spark.read.option("header", True)
-        .option("inferSchema", True)
-        .csv("/Users/andrij.demianczuk@databricks.com/data/lookups/l_hls_positions.csv"))
-
-    #drop the index column
-    df = df.drop(df._c0)
+    df = spark.table(f"{CATALOG}.{SCHEMA}.l_nc_nurse_positions")
 
     # return the result as a materialization from the dataframe object
     return df
@@ -95,13 +103,8 @@ def dlt_hls_positions():
 )
 def dlt_hls_medunits():
 
-    # Read the lookup table from source and drop the index column
-    df = (spark.read.option("header", True)
-        .option("inferSchema", True)
-        .csv("/Users/andrij.demianczuk@databricks.com/data/lookups/l_hls_medunits.csv"))
-
-    #drop the index column
-    df = df.drop(df._c0)
+    # # Read the lookup table from source and drop the index column
+    df = spark.table(f"{CATALOG}.{SCHEMA}.l_nc_med_units")
 
     # return the result as a materialization from the dataframe object
     return df
@@ -132,7 +135,7 @@ def dlt_hls_medunits():
 def dlt_hls_staffing():
     return (spark.readStream.format("cloudFiles")
         .option("cloudFiles.format", "csv")
-        .load("/Users/andrij.demianczuk@databricks.com/data/hls_source/staff/"))
+        .load(f"/Users/{USER}/data/hls_source/staff/"))
 
 
 #Callout stream source
@@ -144,7 +147,7 @@ def dlt_hls_staffing():
 def dlt_hls_callouts():
     return (spark.readStream.format("cloudFiles")
         .option("cloudFiles.format", "csv")
-        .load("/Users/andrij.demianczuk@databricks.com/data/hls_source/callouts/"))
+        .load(f"/Users/{USER}/data/hls_source/callouts/"))
 
 # COMMAND ----------
 
