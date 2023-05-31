@@ -9,6 +9,12 @@
 
 -- COMMAND ----------
 
+USER = "andrij.demianczuk@databricks.com"
+CATALOG = "main"
+SCHEMA = "hls"
+
+-- COMMAND ----------
+
 -- MAGIC %md
 -- MAGIC ####Unity Catalog as your Entitlement Layer Managed by Databricks
 -- MAGIC As a data provider, you can make your Unity Catalog Metastore act as a Delta Sharing Server and share data on Unity Catalog with other organizations.  
@@ -19,7 +25,7 @@
 
 -- MAGIC %md
 -- MAGIC ## 1. Setting up Delta Sharing
--- MAGIC 
+-- MAGIC
 -- MAGIC Delta sharing is facilitated through a dedicated service, and is managed in a similar way to NFS management. Shares are applied as contexts for the server to manage that contain relationships with tables. Recipients are then created and granted permissions to the shares and any table objects contained within.
 
 -- COMMAND ----------
@@ -34,15 +40,15 @@ SHOW SHARES
 
 -- COMMAND ----------
 
-DROP RECIPIENT IF EXISTS ademianczuk_internal;
-DROP RECIPIENT IF EXISTS ademianczuk_external;
-DROP SHARE IF EXISTS hls_ad_internal;
-DROP SHARE IF EXISTS hls_ad_external;
+DROP RECIPIENT IF EXISTS nc_internal;
+DROP RECIPIENT IF EXISTS nc_external;
+DROP SHARE IF EXISTS hls_nc_internal;
+DROP SHARE IF EXISTS hls_nc_external;
 
 -- COMMAND ----------
 
 -- DBTITLE 1,Unity Catalog’s security model is based on standard ANSI SQL, to grant permissions at the level of databases, tables, views, rows and columns 
-USE CATALOG canada_west
+USE CATALOG main
 
 -- COMMAND ----------
 
@@ -51,25 +57,25 @@ USE CATALOG canada_west
 
 -- COMMAND ----------
 
-CREATE SHARE IF NOT EXISTS hls_ad_internal COMMENT 'HLS Internal Share. This share will only be for internal workspace sharing';
+CREATE SHARE IF NOT EXISTS hls_nc_internal COMMENT 'HLS Internal Share. This share will only be for internal workspace sharing';
 
 -- COMMAND ----------
 
-CREATE SHARE IF NOT EXISTS hls_ad_external COMMENT 'HLS External Share, This share will be for external client sharing';
+CREATE SHARE IF NOT EXISTS hls_nc_external COMMENT 'HLS External Share, This share will be for external client sharing';
 
 -- COMMAND ----------
 
-DESCRIBE SHARE hls_ad_external
+DESCRIBE SHARE hls_nc_external
 
 -- COMMAND ----------
 
-DESCRIBE SHARE hls_ad_internal
+DESCRIBE SHARE hls_nc_internal
 
 -- COMMAND ----------
 
 -- MAGIC %md
 -- MAGIC ## 3. Adding tables to shares
--- MAGIC 
+-- MAGIC
 -- MAGIC Working with shares is similar to working with schemas and tables. Permissions can be granted at the share or table scope
 
 -- COMMAND ----------
@@ -162,7 +168,7 @@ GRANT SELECT ON SHARE hls_ad_external TO RECIPIENT ademianczuk_external;
 
 -- MAGIC %md
 -- MAGIC ## 6. Auditing permissions
--- MAGIC 
+-- MAGIC
 -- MAGIC These are several methods to audit access and permissions on various objects and namespaces. Show and Describe are generally available on most Delta Sharing objects
 
 -- COMMAND ----------

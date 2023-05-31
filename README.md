@@ -35,3 +35,15 @@ CATALOG = "main"
 ```
 7. Run the notebook. This notebook is intended to be run as many times as required to generate callouts.
 8. **Optional:** If you want to test out the Spark Streaming capabilites, run the python/00_Process_Callout notebook. This will initialize a new stream and display a streaming dataframe. If you want to see new data coming in, leave this stream running and run the pyton/00_Generate_Callout notebook again to see new callout records being appended in real-time.
+9. Open python/01_Clean_And_Augment. This notebook converts the bronze tables into silver with some cleaning and augmentation. Update the following at the top of the notebook.
+```
+CATALOG = "main"
+```
+10. Run the notebook.
+11. Open python/02_Aggregate. This notebook does all of the work to create the summary and aggregate tables. This will create the final 5 gold tables which can be used for reporting and dashboarding. As above, replace the following with the catalog you are using:
+```
+CATALOG = "main"
+```
+12. Run the notebook.
+### Deploying the DLT Pipeline.
+**IMPORTANT!:** The DLT Pipeline requires the lookup tables from the previous section to be in place in order for this to work. Run steps 2&3 from the above section if not already done.

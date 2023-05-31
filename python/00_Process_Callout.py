@@ -1,7 +1,7 @@
 # Databricks notebook source
 # DBTITLE 1,Initialize global parameters
 USER = "andrij.demianczuk@databricks.com"
-CATALOG = "main"
+CATALOG = dbutils.job.taskValues.get(key='catalog')
 
 # COMMAND ----------
 
