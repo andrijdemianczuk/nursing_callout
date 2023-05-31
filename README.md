@@ -177,5 +177,46 @@ CATALOG = "main"
     "created_time": 1684875414688
 }
 ```
-### Deploying the DLT Pipeline.
+### Deploying the DLT Pipeline
 **IMPORTANT!:** The DLT Pipeline requires the lookup tables from the previous section to be in place in order for this to work. Run steps 2&3 from the above section if not already done.
+
+1. Create a new DLT Pipeline in the Delta Live Tables tab of the Databricks Workflow UI.
+2. Switch to JSON view
+3. Paste the following in, replacing any variables where necessary:
+```json
+{
+    "clusters": [
+        {
+            "label": "default",
+            "autoscale": {
+                "min_workers": 1,
+                "max_workers": 1,
+                "mode": "ENHANCED"
+            }
+        }
+    ],
+    "development": true,
+    "continuous": false,
+    "channel": "PREVIEW",
+    "photon": false,
+    "libraries": [
+        {
+            "notebook": {
+                "path": "/Repos/{user.name@databricks.com}/nursing_callout/python/10_DLT_Staffing_Pipeline"
+            }
+        }
+    ],
+    "name": "nurse_callout_pipeline",
+    "edition": "ADVANCED",
+    "catalog": "main",
+    "configuration": {
+        "yearly_hours": "400",
+        "user": "{user.name@databricks.com}",
+        "catalog": "main",
+        "schema": "hls"
+    },
+    "target": "hls"
+}
+```
+4. Be sure to replace the notebook path with the fully-qualified location of the notebook python/10_DLT_Staffing_Pipeline (typically, just replace username)
+5. Update the 'configuration' section with the options of your choosing. For the sake of demo, feel free to play around with the yearly_hours option to determine the average number of hours worked per year to adjust the heavy / light workers assessment.
