@@ -45,5 +45,137 @@ CATALOG = "main"
 CATALOG = "main"
 ```
 12. Run the notebook.
+
+13. If you want to schedule all of these notebooks in a pipeline, create a new workflow with the following tasks:
+* a. 00_Generate_Callout
+* b. 00_Process_Callout
+* c. 01_Clean_and_Augment
+* d. 02_Aggregate
+
+14. The following configuration can alternatively be used to bootstrap your workflow config:
+```json
+{
+    "job_id": 339532994781288,
+    "creator_user_name": "user.name@databricks.com",
+    "run_as_user_name": "user.name@databricks.com",
+    "run_as_owner": true,
+    "settings": {
+        "name": "Nurse_Callout_Workflow",
+        "email_notifications": {
+            "no_alert_for_skipped_runs": false
+        },
+        "webhook_notifications": {},
+        "timeout_seconds": 0,
+        "max_concurrent_runs": 1,
+        "tasks": [
+            {
+                "task_key": "00_Generate_Callout",
+                "notebook_task": {
+                    "notebook_path": "/Repos/<user.name@databricks.com>m/nursing_callout/python/00_Generate_Callout",
+                    "source": "WORKSPACE"
+                },
+                "job_cluster_key": "Nurse_Callout_Job_Cluster",
+                "timeout_seconds": 0,
+                "email_notifications": {},
+                "notification_settings": {
+                    "no_alert_for_skipped_runs": false,
+                    "no_alert_for_canceled_runs": false,
+                    "alert_on_last_attempt": false
+                }
+            },
+            {
+                "task_key": "00_Process_Callout",
+                "depends_on": [
+                    {
+                        "task_key": "00_Generate_Callout"
+                    }
+                ],
+                "notebook_task": {
+                    "notebook_path": "/Repos/<user.name@databricks.com>/nursing_callout/python/00_Process_Callout",
+                    "source": "WORKSPACE"
+                },
+                "job_cluster_key": "Nurse_Callout_Job_Cluster",
+                "timeout_seconds": 0,
+                "email_notifications": {},
+                "notification_settings": {
+                    "no_alert_for_skipped_runs": false,
+                    "no_alert_for_canceled_runs": false,
+                    "alert_on_last_attempt": false
+                }
+            },
+            {
+                "task_key": "01_Clean_and_Augment",
+                "depends_on": [
+                    {
+                        "task_key": "00_Process_Callout"
+                    }
+                ],
+                "notebook_task": {
+                    "notebook_path": "/Repos/<user.name@databricks.com>/nursing_callout/python/01_Clean_and_Augment",
+                    "source": "WORKSPACE"
+                },
+                "job_cluster_key": "Nurse_Callout_Job_Cluster",
+                "timeout_seconds": 0,
+                "email_notifications": {},
+                "notification_settings": {
+                    "no_alert_for_skipped_runs": false,
+                    "no_alert_for_canceled_runs": false,
+                    "alert_on_last_attempt": false
+                }
+            },
+            {
+                "task_key": "02_Aggregate",
+                "depends_on": [
+                    {
+                        "task_key": "01_Clean_and_Augment"
+                    }
+                ],
+                "notebook_task": {
+                    "notebook_path": "/Repos/<user.name@databricks.com>/nursing_callout/python/02_Aggregate",
+                    "source": "WORKSPACE"
+                },
+                "job_cluster_key": "Nurse_Callout_Job_Cluster",
+                "timeout_seconds": 0,
+                "email_notifications": {},
+                "notification_settings": {
+                    "no_alert_for_skipped_runs": false,
+                    "no_alert_for_canceled_runs": false,
+                    "alert_on_last_attempt": false
+                }
+            }
+        ],
+        "job_clusters": [
+            {
+                "job_cluster_key": "Nurse_Callout_Job_Cluster",
+                "new_cluster": {
+                    "cluster_name": "",
+                    "spark_version": "13.1.x-scala2.12",
+                    "spark_conf": {
+                        "spark.master": "local[*, 4]",
+                        "spark.databricks.cluster.profile": "singleNode"
+                    },
+                    "aws_attributes": {
+                        "first_on_demand": 1,
+                        "availability": "SPOT_WITH_FALLBACK",
+                        "zone_id": "us-west-2c",
+                        "spot_bid_price_percent": 100,
+                        "ebs_volume_count": 0
+                    },
+                    "node_type_id": "i3.xlarge",
+                    "custom_tags": {
+                        "ResourceClass": "SingleNode"
+                    },
+                    "enable_elastic_disk": true,
+                    "data_security_mode": "SINGLE_USER",
+                    "runtime_engine": "STANDARD",
+                    "num_workers": 0
+                }
+            }
+        ],
+        "format": "MULTI_TASK"
+    },
+    "created_time": 1684875414688
+}
+```
 ### Deploying the DLT Pipeline.
 **IMPORTANT!:** The DLT Pipeline requires the lookup tables from the previous section to be in place in order for this to work. Run steps 2&3 from the above section if not already done.
